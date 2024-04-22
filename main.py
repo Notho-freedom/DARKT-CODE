@@ -2,8 +2,10 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from V.code_editor import AutoCompleterCodeEditor
-from V.vstheme import SyntaxHighlighter
+from V.M.syntaxHighlighter import PythonSyntaxHighlighter
+from V.M.autoCompleter import AutoCompleterCodeEditor
+from pygments.styles import STYLE_MAP
+from V.panel import Panel
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -21,21 +23,43 @@ class MainWindow(QMainWindow):
         border: 1px solid rgb(0, 204, 255);
         background-color: rgb(30,30,30);
     }
+    
+    
+    QHBoxLayout{
+        color: white;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        background-color: red;
+    }
 
     QTabBar::tab:!selected {
         color: white;
-        background-color: rgb(30,30,30)
+        background-color: rgb(30,30,30);
+        border-radius: 0px;
+        spacing: 10px;
+        padding: 10px;
+        padding-top: 0px;
     }
 
     QTabBar::tab:!selected:hover {
         border-top: 1px double rgb(0, 204, 255);
         color: white;
-        background-color: transparent;}
+        background-color: transparent;
+        border-radius: 0px;
+        spacing: 10px;
+        padding: 10px;
+        padding-top: 0px;
+        }
 
     QTabBar::tab:selected {
         border-top: 1px double rgb(0, 204, 255);
         color: white;
         background-color: transparent;
+        border-radius: 0px;
+        spacing: 10px;
+        padding: 10px;
+        padding-top: 0px;
     }
         """
         self.setStyleSheet(qcss)
@@ -64,12 +88,13 @@ class MainWindow(QMainWindow):
         middle_vbox_layout = QVBoxLayout()
 
         middle_hbox_layout = QHBoxLayout()
-        text_edit_left = AutoCompleterCodeEditor()
-        text_edit_left.setPlaceholderText("Texte éditable")
-        text_edit_left.setMinimumWidth(0.85 * self.width())
-        text_edit_left.setMinimumHeight(0.5 * self.height())
+        self.text_edit_left = AutoCompleterCodeEditor()
+        self.highlighter = PythonSyntaxHighlighter(self.text_edit_left.document())
+        self.text_edit_left.setStyleSheet("background-color: rgb(30,30,30); color: #f0f0f0;")
+        self.text_edit_left.setMinimumWidth(0.85 * self.width())
+        self.text_edit_left.setMinimumHeight(0.5 * self.height())
 
-        middle_hbox_layout.addWidget(text_edit_left)
+        middle_hbox_layout.addWidget(self.text_edit_left)
 
         text_edit_right = QTextEdit()
         text_edit_right.setPlaceholderText("Texte en lecture seule")
@@ -79,59 +104,12 @@ class MainWindow(QMainWindow):
 
         middle_vbox_layout.addLayout(middle_hbox_layout)
         
-        
-        middle_tab_widget_bottom = QTabWidget()
-         #tab1
-        tab = QListWidget()
-        tab.addItems(["PROBLEME 1","PROBLEME 2","PROBLEME 3"])
-        middle_tab_widget_bottom.addTab(tab,"PROBLEMES")
-        
-        #tab2
-        tab = QListWidget()
-        tab.addItems(["SORTIE 1","SORTIE 2","SORTIE 3"])
-        middle_tab_widget_bottom.addTab(tab,"SORTIE")
+        self.panel = Panel()
+        self.panel.setStyleSheet(u"border: none;")
+        self.panel.setAutoFillBackground(True)
+        self.panel.setContentsMargins(5,5,0,0)
 
-        #tab3
-        tab = QListWidget()
-        tab.addItems(["CONSOLE 1","CONSOLE 2","CONSOLE 3"])
-        middle_tab_widget_bottom.addTab(tab,"CONSOLE DEB")
-
-        #tab4
-        tab = QListWidget()
-        tab.addItems(["CONSOLE 1","CONSOLE 2","CONSOLE 3"])
-        middle_tab_widget_bottom.addTab(tab,"TERMINAL")
-
-        #tab5
-        tab = QListWidget()
-        tab.addItems(["PORTS 1","PORTS 2","PORTS 3"])
-        middle_tab_widget_bottom.addTab(tab,"PORTS")
-
-        #tab6
-        tab = QListWidget()
-        tab.addItems(["PORTS 1","PORTS 2","PORTS 3"])
-        middle_tab_widget_bottom.addTab(tab,"CODE REF")
-
-        #tab7
-        tab = QListWidget()
-        tab.addItems(["PORTS 1","PORTS 2","PORTS 3"])
-        middle_tab_widget_bottom.addTab(tab,"SQL CONS")
-
-        #tab8
-        tab = QListWidget()
-        tab.addItems(["PORTS 1","PORTS 2","PORTS 3"])
-        middle_tab_widget_bottom.addTab(tab,"LIGHTRUN")
-
-        #tab9
-        tab = QListWidget()
-        tab.addItems(["PORTS 1","PORTS 2","PORTS 3"])
-        middle_tab_widget_bottom.addTab(tab,"COMMENTAIRES")
-
-        #tab10
-        tab = QListWidget()
-        tab.addItems(["PORTS 1","PORTS 2","PORTS 3"])
-        middle_tab_widget_bottom.addTab(tab,"SEARCH ERROR")
-        
-        middle_vbox_layout.addWidget(middle_tab_widget_bottom,0,Qt.AlignBottom)
+        middle_vbox_layout.addWidget(self.panel,0,Qt.AlignBottom)
         middle_layout.addWidget(middle_tab_widget,0,Qt.AlignLeft)
         middle_layout.addLayout(middle_vbox_layout)
         layout.addLayout(middle_layout)
@@ -151,6 +129,55 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
+        self.statusBar()
+        self.createActions()
+        self.createMenus()
+        
+    def createActions(self):
+        self.openAction = QAction('Open', self)
+        self.openAction.triggered.connect(self.openFile)
+
+        self.saveAction = QAction('Save', self)
+        self.saveAction.triggered.connect(self.saveFile)
+
+        # Add more actions here
+
+    def createMenus(self):
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+        fileMenu.addAction(self.openAction)
+        fileMenu.addAction(self.saveAction)
+
+        themeMenu = menubar.addMenu('Themes')
+        themes = list(STYLE_MAP.keys())  # Ajouter tous les thèmes disponibles
+        for style in sorted(themes):  # Trier les thèmes pour une meilleure organisation
+            themeAction = QAction(style, self)
+            themeAction.triggered.connect(lambda checked, s=style: self.changeTheme(s))
+            themeMenu.addAction(themeAction)
+
+
+    def changeTheme(self, style_name):
+        self.highlighter.setupStyles(style_name)
+        self.text_edit_left.document().setModified(True)
+        self.text_edit_left.document().setDefaultFont(QFont("Consolas", 12))
+        self.text_edit_left.setStyleSheet("color: #f0f0f0;")
+        self.highlighter.rehighlight()
+
+
+
+    def openFile(self):
+        filename, _ = QFileDialog.getOpenFileName(self, 'Open File', '', 'Python Files (*.py)')
+        if filename:
+            with open(filename, 'r', encoding='utf-8') as file:
+                self.text_edit_left.setPlainText(file.read())
+
+    def saveFile(self):
+        filename, _ = QFileDialog.getSaveFileName(self, 'Save File', '', 'Python Files (*.py)')
+        if filename:
+            with open(filename, 'w', encoding='utf-8') as file:
+                file.write(self.text_edit_left.toPlainText())
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
