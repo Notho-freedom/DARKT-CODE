@@ -29,7 +29,7 @@ class AutoCompleterCodeEditor(QPlainTextEdit):
 
         self.blockCountChanged.connect(self.update_line_number_area_width)
         self.updateRequest.connect(self.update_line_number_area)
-        #self.cursorPositionChanged.connect(self.highlight_current_line)
+        self.cursorPositionChanged.connect(self.highlight_current_line)
 
         self.update_line_number_area_width(0)
 
