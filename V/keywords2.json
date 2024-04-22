@@ -1,0 +1,4 @@
+{
+    "keywords": ["def", "class", "import", "from", "as", "return"],
+    "functions": ["print", "len", "str", "int", "float"]
+}

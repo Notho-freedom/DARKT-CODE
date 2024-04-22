@@ -1,0 +1,33 @@
+/* Global styles */
+* {
+    color: white;
+    background-color: qlineargradient(spread: pad, x1: 0, y1: 0.989, x2: 0.977273, y2: 0.051, stop: 0 rgba(35, 25, 73, 255), stop: 1 rgba(0, 91, 156, 81));
+    border: none;
+}
+
+/* Specific styles for labels, combo boxes, and buttons */
+QLabel, QComboBox, QPushButton, #frame_3, QtCharts {
+    background-color: transparent;
+}
+
+/* Styles for menus and tooltips */
+QMenu, QToolTip {
+    background-color: qlineargradient(spread: pad, x1: 0, y1: 0.989, x2: 0.977273, y2: 0.051, stop: 0 rgba(35, 25, 73, 255), stop: 1 rgba(0, 91, 156, 81));
+    border: 1px double cyan;
+    border-radius: 5px;
+}
+
+/* Styles for actions and their hover state */
+QAction {
+    background-color: qlineargradient(spread: pad, x1: 0, y1: 0.989, x2: 0.977273, y2: 0.051, stop: 0 rgba(238, 174, 202, 1), stop: 1 rgba(148, 187, 233, 1));
+    border: 1px solid rgb(9, 5, 13);
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+QAction:hover {
+    background-color: qlineargradient(spread: pad, x1: 0, y1: 0.989, x2: 0.977273, y2: 0.051, stop: 0 rgba(238, 174, 202, 1), stop: 1 rgba(148, 187, 233, 1));
+    border: 2px solid cyan;
+    text-align: center;
+}
