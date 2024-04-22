@@ -4,7 +4,7 @@ from editor import *
 
 def main():
     app = QApplication(sys.argv)
-    editor = CodeEditor()
+    editor = Editor()
     editor.show()
     sys.exit(app.exec_())
 

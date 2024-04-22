@@ -1,7 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from syntax_highlighter import *
+from M.syntaxHighlighter import PythonSyntaxHighlighter
+from M.autoCompleter import AutoCompleterCodeEditor
 from pygments.styles import STYLE_MAP
 
 class Editor(QMainWindow):
@@ -12,7 +13,6 @@ class Editor(QMainWindow):
     def initUI(self):
         self.textEdit = AutoCompleterCodeEditor()
         self.highlighter = PythonSyntaxHighlighter(self.textEdit.document())
-        self.autoIndenter = AutoIndenter(self.textEdit)
         self.textEdit.setStyleSheet("background-color: #2b2b2b; color: #f0f0f0;")
         self.setCentralWidget(self.textEdit)
         self.statusBar()
@@ -25,7 +25,6 @@ class Editor(QMainWindow):
     def eventFilter(self, source, event):
         if (event.type() == event.KeyPress and source is self.textEdit):
             if event.key() == Qt.Key_Return:
-                self.autoIndenter.handle_new_line()
                 return True  # Ignore further processing to avoid double new lines
         return super(Editor, self).eventFilter(source, event)
     
