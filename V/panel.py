@@ -49,7 +49,7 @@ class Panel(QWidget):
                 default_directory = "C:/Users/SEVERIN/Desktop/ravel/1.2/"
                 result = new_cmd_commande(default_directory,commande)
                 self.write_to_terminal(result)
-                # print("Text entered in terminal:", text)  # Do something with the entered text
+                # print("Text entered in terminal:", text)  
         return super().eventFilter(obj, event)
 
     def write_to_terminal(self, text):
