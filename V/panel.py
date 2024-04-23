@@ -33,7 +33,7 @@ class Panel(QWidget):
             if tab_name == "TERMINAL":  # Replace terminal tab with QTextEdit
                 self.terminal_text_edit = QTextEdit()
                 self.middle_tab_widget_bottom.addTab(self.terminal_text_edit, tab_name)
-                self.terminal_text_edit.installEventFilter(self)  # Install event filter for QTextEdit
+                self.terminal_text_edit.installEventFilter(self)  # Install event filter for QTextEdit# Install event filter for QTextEdit# Install event filter for QTextEdit
             else:
                 tab = QTextEdit()
                 tab.append("\n".join(items))
